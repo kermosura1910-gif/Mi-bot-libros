@@ -1,4 +1,5 @@
-"name": "mi-bot-libros",
+{
+  "name": "mi-bot-libros",
   "version": "1.0.0",
   "description": "Buscador de libros para Telegram",
   "main": "index.js",
@@ -8,3 +9,5 @@
   "dependencies": {
     "telegraf": "^4.16.3",
     "node-fetch": "^2.7.0"
+  }
+}
