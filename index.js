@@ -2,8 +2,7 @@ const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
 
 // Token real de tu bot "AD romance"
-const TOKEN_BOT = "8628504281:AAEzgd9Ewvy_NbXwK5E_Fw8zYv6W5U_7p8Q"; 
-
+const TOKEN_BOT = process.env.TOKEN_BOT;
 const bot = new Telegraf(TOKEN_BOT);
 
 // Mensaje de bienvenida cuando alguien inicia el bot
