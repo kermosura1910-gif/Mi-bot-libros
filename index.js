@@ -1,48 +1,52 @@
 const { Telegraf } = require('telegraf');
 const fetch = require('node-fetch');
 
-// Token real de tu bot "A.D romance"
-const BOT_TOKEN = "8628504281:AAEzgd9Ewvy_NbXwKSYPAUiubXiIWP58_w4";
+// Token real de tu bot "AD romance"
+const TOKEN_BOT = "8628504281:AAEzgd9Ewvy_NbXwK5E_Fw8zYv6W5U_7p8Q"; 
 
-const bot = new Telegraf(BOT_TOKEN);
+const bot = new Telegraf(TOKEN_BOT);
 
 // Mensaje de bienvenida cuando alguien inicia el bot
 bot.start((ctx) => {
-  ctx.reply('¡Hola! Soy tu buscador de libros A.D romance. Dime el título o autor que buscas y lo rastrearé en todo internet.');
+  ctx.reply('¡Hola! Soy tu buscador de libros AD romance.');
 });
 
 // Lógica para procesar la búsqueda de libros
 bot.on('text', async (ctx) => {
   const busqueda = ctx.message.text;
-  await ctx.reply(`🔍 Buscando "${busqueda}" en internet... Dame un momento.`);
+  await ctx.reply(`🔍 Buscando "${busqueda}"...`);
 
   try {
-    // Búsqueda en la base de datos de Open Library (Internet)
-    const urlInternet = `https://openlibrary.org/search.json?q=${encodeURIComponent(busqueda)}&limit=5`;
-    const respuesta = await fetch(urlInternet);
+    // Búsqueda en la base de datos de Open Library
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(busqueda)}`;
+    const respuesta = await fetch(url);
     const datos = await respuesta.json();
 
-    let mensajeInternet = "🌐 *Resultados encontrados:*\n\n";
-    
     if (datos.docs && datos.docs.length > 0) {
-      datos.docs.forEach(libro => {
+      let mensaje = "📚 **Libros encontrados:**\n\n";
+      // Tomamos los primeros 5 resultados
+      const libros = datos.docs.slice(0, 5);
+      
+      libros.forEach((libro, index) => {
         const titulo = libro.title || "Sin título";
         const autor = libro.author_name ? libro.author_name.join(', ') : "Autor desconocido";
-        const link = libro.key ? `https://openlibrary.org${libro.key}` : "#";
-        
-        mensajeInternet += `📖 *${titulo}*\n👤 Autor: ${autor}\n🔗 [Ver/Descargar libro](${link})\n\n`;
+        const año = libro.first_publish_year || "Año desconocido";
+        mensaje += `${index + 1}. **${titulo}**\n✍️ Autor: ${autor}\n📅 Año: ${año}\n\n`;
       });
+      
+      await ctx.reply(mensaje);
     } else {
-      mensajeInternet = "❌ No encontré ningún libro en internet con ese nombre. Intenta con otro título o autor.";
+      await ctx.reply("❌ No encontré ningún libro con ese nombre.");
     }
-
-    await ctx.replyWithMarkdown(mensajeInternet);
-
   } catch (error) {
     console.error(error);
-    await ctx.reply("Vaya, hubo un error al realizar la búsqueda. Inténtalo de nuevo en unos segundos.");
+    await ctx.reply("⚠️ Hubo un error al realizar la búsqueda. Inténtalo más tarde.");
   }
 });
 
 // Lanzar el bot
-bot.launch().then(() => console.log("¡Bot A.D romance activado con éxito!"));
+bot.launch().then(() => {
+  console.log("Bot en funcionamiento...");
+}).catch((err) => {
+  console.error("Error al iniciar el bot:", err);
+});
